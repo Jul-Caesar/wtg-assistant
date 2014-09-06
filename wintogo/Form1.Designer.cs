@@ -101,6 +101,7 @@
             this.checkBoxdiskpart = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.错误提示测试ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBoxadv.SuspendLayout();
@@ -126,7 +127,7 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(124, 181);
+            this.button1.Location = new System.Drawing.Point(94, 181);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(162, 38);
@@ -165,9 +166,10 @@
             this.不格式化磁盘ToolStripMenuItem,
             this.手动执行命令ToolStripMenuItem,
             this.强制格式化ToolStripMenuItem,
-            this.萝卜头IT论坛ToolStripMenuItem});
+            this.萝卜头IT论坛ToolStripMenuItem,
+            this.错误提示测试ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(185, 136);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(185, 158);
             // 
             // 启动时自动检查更新ToolStripMenuItem
             // 
@@ -413,7 +415,7 @@
             // 
             // button2
             // 
-            this.button2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button2.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button2.Location = new System.Drawing.Point(354, 89);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button2.Name = "button2";
@@ -427,11 +429,11 @@
             // linkLabel3
             // 
             this.linkLabel3.AutoSize = true;
-            this.linkLabel3.Font = new System.Drawing.Font("微软雅黑", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.linkLabel3.Font = new System.Drawing.Font("微软雅黑", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.linkLabel3.LinkColor = System.Drawing.Color.Red;
             this.linkLabel3.Location = new System.Drawing.Point(330, 157);
             this.linkLabel3.Name = "linkLabel3";
-            this.linkLabel3.Size = new System.Drawing.Size(15, 19);
+            this.linkLabel3.Size = new System.Drawing.Size(16, 19);
             this.linkLabel3.TabIndex = 42;
             this.linkLabel3.TabStop = true;
             this.linkLabel3.Text = "?";
@@ -441,15 +443,15 @@
             // linkLabel5
             // 
             this.linkLabel5.AutoSize = true;
-            this.linkLabel5.Font = new System.Drawing.Font("微软雅黑", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.linkLabel5.Font = new System.Drawing.Font("微软雅黑", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.linkLabel5.LinkColor = System.Drawing.Color.Red;
-            this.linkLabel5.Location = new System.Drawing.Point(64, 0);
+            this.linkLabel5.Location = new System.Drawing.Point(65, 0);
             this.linkLabel5.Name = "linkLabel5";
-            this.linkLabel5.Size = new System.Drawing.Size(15, 19);
+            this.linkLabel5.Size = new System.Drawing.Size(16, 19);
             this.linkLabel5.TabIndex = 43;
             this.linkLabel5.TabStop = true;
             this.linkLabel5.Text = "?";
-            this.toolTip1.SetToolTip(this.linkLabel5, "查看三种模式区别");
+            this.toolTip1.SetToolTip(this.linkLabel5, "查看详细信息");
             this.linkLabel5.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel5_LinkClicked);
             // 
             // button3
@@ -466,7 +468,7 @@
             // checkBoxnotemp
             // 
             this.checkBoxnotemp.AutoSize = true;
-            this.checkBoxnotemp.Location = new System.Drawing.Point(13, 149);
+            this.checkBoxnotemp.Location = new System.Drawing.Point(6, 149);
             this.checkBoxnotemp.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxnotemp.Name = "checkBoxnotemp";
             this.checkBoxnotemp.Size = new System.Drawing.Size(89, 21);
@@ -479,12 +481,12 @@
             // checkBox_san_policy
             // 
             this.checkBox_san_policy.AutoSize = true;
-            this.checkBox_san_policy.Location = new System.Drawing.Point(13, 120);
+            this.checkBox_san_policy.Location = new System.Drawing.Point(6, 120);
             this.checkBox_san_policy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBox_san_policy.Name = "checkBox_san_policy";
-            this.checkBox_san_policy.Size = new System.Drawing.Size(75, 21);
+            this.checkBox_san_policy.Size = new System.Drawing.Size(99, 21);
             this.checkBox_san_policy.TabIndex = 43;
-            this.checkBox_san_policy.Text = "屏蔽硬盘";
+            this.checkBox_san_policy.Text = "屏蔽本机硬盘";
             this.toolTip1.SetToolTip(this.checkBox_san_policy, "WTG系统启动后，屏蔽本机硬盘");
             this.checkBox_san_policy.UseVisualStyleBackColor = true;
             // 
@@ -545,7 +547,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 20);
+            this.label1.Location = new System.Drawing.Point(6, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(82, 34);
             this.label1.TabIndex = 40;
@@ -578,7 +580,7 @@
             // 
             this.checkBoxwimboot.AutoSize = true;
             this.checkBoxwimboot.Enabled = false;
-            this.checkBoxwimboot.Location = new System.Drawing.Point(103, 149);
+            this.checkBoxwimboot.Location = new System.Drawing.Point(103, 148);
             this.checkBoxwimboot.Name = "checkBoxwimboot";
             this.checkBoxwimboot.Size = new System.Drawing.Size(90, 21);
             this.checkBoxwimboot.TabIndex = 46;
@@ -600,7 +602,7 @@
             // checkBoxdiswinre
             // 
             this.checkBoxdiswinre.AutoSize = true;
-            this.checkBoxdiswinre.Location = new System.Drawing.Point(13, 87);
+            this.checkBoxdiswinre.Location = new System.Drawing.Point(6, 87);
             this.checkBoxdiswinre.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxdiswinre.Name = "checkBoxdiswinre";
             this.checkBoxdiswinre.Size = new System.Drawing.Size(88, 21);
@@ -623,7 +625,7 @@
             // checkBoxfixed
             // 
             this.checkBoxfixed.AutoSize = true;
-            this.checkBoxfixed.Location = new System.Drawing.Point(13, 58);
+            this.checkBoxfixed.Location = new System.Drawing.Point(6, 58);
             this.checkBoxfixed.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxfixed.Name = "checkBoxfixed";
             this.checkBoxfixed.Size = new System.Drawing.Size(75, 21);
@@ -792,7 +794,7 @@
             this.label4.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(292, 183);
+            this.label4.Location = new System.Drawing.Point(262, 183);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(18, 37);
             this.label4.TabIndex = 46;
@@ -803,12 +805,19 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(316, 183);
+            this.label5.Location = new System.Drawing.Point(286, 183);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(83, 30);
+            this.label5.Size = new System.Drawing.Size(91, 30);
             this.label5.TabIndex = 47;
-            this.label5.Text = "XP系统下部分\r\n功能不可用";
+            this.label5.Text = "WIN8以下系统\r\n部分功能不可用";
             this.label5.Visible = false;
+            // 
+            // 错误提示测试ToolStripMenuItem
+            // 
+            this.错误提示测试ToolStripMenuItem.Name = "错误提示测试ToolStripMenuItem";
+            this.错误提示测试ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.错误提示测试ToolStripMenuItem.Text = "错误提示测试";
+            this.错误提示测试ToolStripMenuItem.Click += new System.EventHandler(this.错误提示测试ToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -929,6 +938,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox checkBoxuefimbr;
         private System.Windows.Forms.CheckBox checkBoxwimboot;
+        private System.Windows.Forms.ToolStripMenuItem 错误提示测试ToolStripMenuItem;
     }
 }
 

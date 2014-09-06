@@ -254,41 +254,36 @@ namespace iTuner
                     "associators of {{Win32_DiskDrive.DeviceID='{0}'}} where AssocClass = Win32_DiskDriveToDiskPartition",
                     drive["DeviceID"])).Get()) 
                     {
-                        if (partition != null)
+                        try
                         {
-                            // associate partitions with logical disks (drive letter volumes)
-                            ManagementObject logical = new ManagementObjectSearcher(String.Format(
-                                "associators of {{Win32_DiskPartition.DeviceID='{0}'}} where AssocClass = Win32_LogicalDiskToPartition",
-                                partition["DeviceID"])).First();
-                            //MessageBox.Show(String.Format(
-                            //    "associators of {{Win32_DiskPartition.DeviceID='{0}'}} where AssocClass = Win32_LogicalDiskToPartition",
-                            //    partition["DeviceID"]));
-                            if (logical != null)
+                            if (partition != null)
                             {
-                                // finally find the logical disk entry to determine the volume name
-                                ManagementObject volume = new ManagementObjectSearcher(String.Format(
-                                    "select FreeSpace, Size, VolumeName, DriveType from Win32_LogicalDisk where Name='{0}'",
-                                    logical["Name"])).First();
-                                //MessageBox.Show(String.Format(
-                                //    "select FreeSpace, Size, VolumeName from Win32_LogicalDisk where Name='{0}'",
-                                //    logical["Name"]));
-                                UsbDisk disk = new UsbDisk(logical["Name"].ToString());
-                                disk.Model = drive["Model"].ToString();
-                                disk.Volume = volume["VolumeName"].ToString();
-                                disk.FreeSpace = (ulong)volume["FreeSpace"];
-                                disk.Size = (ulong)volume["Size"];
-                                disk.DriveType = volume["DriveType"].ToString();
-                                disks.Add(disk);
-                    //MessageBox.Show(part1.ToString()); 
-                }
+                                // associate partitions with logical disks (drive letter volumes)
+                                ManagementObject logical = new ManagementObjectSearcher(String.Format(
+                                    "associators of {{Win32_DiskPartition.DeviceID='{0}'}} where AssocClass = Win32_LogicalDiskToPartition",
+                                    partition["DeviceID"])).First();
+                                if (logical != null)
+                                {
+                                    // finally find the logical disk entry to determine the volume name
+                                    ManagementObject volume = new ManagementObjectSearcher(String.Format(
+                                        "select FreeSpace, Size, VolumeName, DriveType from Win32_LogicalDisk where Name='{0}'",
+                                        logical["Name"])).First();
+                                    UsbDisk disk = new UsbDisk(logical["Name"].ToString());
+                                    disk.Model = drive["Model"].ToString();
+                                    disk.Volume = volume["VolumeName"].ToString();
+                                    disk.FreeSpace = (ulong)volume["FreeSpace"];
+                                    disk.Size = (ulong)volume["Size"];
+                                    disk.DriveType = Drivetypeconvert(Int32.Parse(volume["DriveType"].ToString()));
+                                    disks.Add(disk);
+                                    //MessageBox.Show("HERE");
+                                }
+                            }
+                        }
+                        catch { }
+                        
+                        
 
-                //ManagementObject partition = new ManagementObjectSearcher(String.Format(
-                //    "associators of {{Win32_DiskDrive.DeviceID='{0}'}} where AssocClass = Win32_DiskDriveToDiskPartition",
-                //    drive["DeviceID"])).First(); ;
-                //MessageBox.Show(partition.ToString ());
-				
-					}
-				}
+				    }
 			}
 
 			return disks;
@@ -358,9 +353,32 @@ namespace iTuner
 					disk.Volume = volume["VolumeName"].ToString();
 					disk.FreeSpace = (ulong)volume["FreeSpace"];
 					disk.Size = (ulong)volume["Size"];
-                    //disk.DriveType = volume["DriveType"].ToString();
+                    disk.DriveType = Drivetypeconvert(Int32.Parse (volume["DriveType"].ToString ()));
+                    //MessageBox.Show(disk.DriveType);
 				}
 			}
 		}
+        private string Drivetypeconvert(int code) 
+        {
+            switch (code) 
+            {
+                case 0:
+                    return "Unknown";
+                case 1:
+                    return "No Root Directory";
+                case 2:
+                    return "Removable Disk";
+                case 3:
+                    return "Local Disk";
+                case 4:
+                    return "Network Drive";
+                case 5:
+                    return "Compact Disc";
+                case 6:
+                    return "RAM Disk";
+                default :
+                    return "Type Error";
+            }
+        }
 	}
 }

@@ -19,6 +19,7 @@ namespace wintogo
 
         private void error_Load(object sender, System.EventArgs e)
         {
+            this.Text += Application.ProductName + Application.ProductVersion;
             label1.Text += errmsg;
         }      
 

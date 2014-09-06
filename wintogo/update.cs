@@ -42,7 +42,7 @@ namespace wintogo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form1.VisitWeb("http://www.luobotou.pw/thread-761-1-1.html");
+            Form1.VisitWeb("http://bbs.luobotou.org/thread-761-1-1.html");
             this.Close();
         }
     }

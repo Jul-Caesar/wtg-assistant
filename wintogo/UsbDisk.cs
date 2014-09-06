@@ -120,7 +120,9 @@ namespace iTuner
             //builder.Append(FormatByteCount(FreeSpace));
             //builder.Append(" free of ");
 			builder.Append(FormatByteCount(Size));
-
+            builder.Append(" (");
+            builder.Append(DriveType);
+            builder.Append(") ");
 			return builder.ToString();
 		}
 

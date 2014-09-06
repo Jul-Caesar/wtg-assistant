@@ -149,6 +149,7 @@
     <Compile Include="UsbStateChange.cs" />
     <Compile Include="UsbStateChangedEventArgs.cs" />
     <Compile Include="WmiExtensions.cs" />
+    <Compile Include="WriteLog.cs" />
     <Compile Include="writeprogress.cs">
       <SubType>Form</SubType>
     </Compile>

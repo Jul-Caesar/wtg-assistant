@@ -26,7 +26,7 @@ namespace wintogo
                 fs.SetLength(0);
                 StreamWriter sw = new StreamWriter(fs, Encoding.Default);
                 string ws = "";
-                ws = Application.StartupPath + "程序版本"+Application.ProductVersion + System.DateTime.Now;
+                ws = Application.StartupPath + "\r\n程序版本："+Application.ProductVersion+"\r\n" + System.DateTime.Now;
                 sw.WriteLine(ws);
                 try
                 {
@@ -42,7 +42,7 @@ namespace wintogo
 
         private void writeprogress_Load(object sender, EventArgs e)
         {
-            textBox1.Text = "";
+            //textBox1.Text = "";
         }
     }
 }

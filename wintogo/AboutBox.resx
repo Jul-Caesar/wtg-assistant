@@ -601,15 +601,15 @@
 </value>
   </data>
   <data name="textBoxDescription.Text" xml:space="preserve">
-    <value>官方论坛：http://www.luobotou.pw/forum-88-1.html
-说明：
-“Windows To Go”，制作“在U盘上运行的 Windows8”，让你的Win8带着走！它不是神马精简版，也不是 WinPE，而是货真价实完完整整的 Win8 操作系统并且能随处在不同的电脑硬件上直接运行，让系统可以随身携带！
-支持Win7/8/8.1系统。
+    <value>官方论坛：http://bbs.luobotou.org/forum-88-1.html
 感谢为此程序作出贡献的人们：
+donkey
+shinobiyan 
+lrv
 fjy
 tommyzhong
 沉默融化了孤独
-
+kill211
 lindingyi
 阳光自由
 jiaopen
@@ -623,6 +623,7 @@ mytoolkit_cn
 hsbmn 
 USB-windons8
 我好像贝壳
+georgezw
 ......
 还有很多人做出过贡献，空间有限，写不下这么多。
 在此一并表示感谢！</value>
