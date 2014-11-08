@@ -8,7 +8,7 @@ namespace wintogo
     {
         public static void WriteLog(string LogName, string WriteInfo)
         {
-
+            if (!Directory.Exists(Application.StartupPath + "\\logs\\")) { Directory.CreateDirectory(Application.StartupPath + "\\logs\\"); }
             if (File.Exists(Application.StartupPath + "\\logs\\" + LogName)) { File.Delete(Application.StartupPath + "\\logs\\" + LogName); }
             FileStream fs0 = new FileStream(Application.StartupPath + "\\logs\\" + LogName, FileMode.Create, FileAccess.Write);
             fs0.SetLength(0);

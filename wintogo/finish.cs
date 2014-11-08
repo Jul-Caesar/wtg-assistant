@@ -18,7 +18,7 @@ namespace wintogo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Form1.VisitWeb("http://www.luobotou.pw/forum.php?mod=viewthread&tid=804");
+            Form1.VisitWeb("http://bbs.luobotou.org/forum.php?mod=viewthread&tid=804");
            
         }
 
@@ -29,8 +29,8 @@ namespace wintogo
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Form1.VisitWeb("http://www.luobotou.pw/thread-5258-1-1.html");
-            //System.Diagnostics.Process.Start("http://www.luobotou.pw/thread-5258-1-1.html");
+            Form1.VisitWeb("http://bbs.luobotou.org/thread-5258-1-1.html");
+            //System.Diagnostics.Process.Start("http://bbs.luobotou.org/thread-5258-1-1.html");
         }
 
   

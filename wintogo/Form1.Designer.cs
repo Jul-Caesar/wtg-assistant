@@ -37,7 +37,6 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.启动时自动检查更新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.打开程序运行目录ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.不格式化磁盘ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.手动执行命令ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imagex解压写入ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.写入引导文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +49,7 @@
             this.向V盘写入ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.卸载V盘ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.复制VHD启动文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemvhdx = new System.Windows.Forms.ToolStripMenuItem();
             this.复制win8vhdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.清理临时文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bootsectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,6 +58,7 @@
             this.wIN7USBBOOTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.强制格式化ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.萝卜头IT论坛ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.错误提示测试ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.label3 = new System.Windows.Forms.Label();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
@@ -76,6 +77,8 @@
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBoxadv = new System.Windows.Forms.GroupBox();
+            this.checkBoxunformat = new System.Windows.Forms.CheckBox();
+            this.checkBoxcommon = new System.Windows.Forms.CheckBox();
             this.checkBoxwimboot = new System.Windows.Forms.CheckBox();
             this.checkBoxuefimbr = new System.Windows.Forms.CheckBox();
             this.checkBoxdiswinre = new System.Windows.Forms.CheckBox();
@@ -101,7 +104,6 @@
             this.checkBoxdiskpart = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.错误提示测试ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBoxadv.SuspendLayout();
@@ -138,7 +140,7 @@
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.Filter = "install.wim|install.wim|所有文件|*.*";
+            this.openFileDialog1.Filter = "映像文件|install.wim;*.esd|所有文件|*.*";
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // wimbox
@@ -149,9 +151,9 @@
             this.wimbox.ForeColor = System.Drawing.Color.Blue;
             this.wimbox.Location = new System.Drawing.Point(15, 89);
             this.wimbox.Name = "wimbox";
-            this.wimbox.Size = new System.Drawing.Size(308, 19);
+            this.wimbox.Size = new System.Drawing.Size(283, 19);
             this.wimbox.TabIndex = 1;
-            this.wimbox.Text = "点此选择Win7/8镜像sources目录下的install.wim\r\n";
+            this.wimbox.Text = "点此选择ISO镜像sources目录下的install.wim\r\n";
             this.wimbox.Click += new System.EventHandler(this.wimbox_Click);
             // 
             // folderBrowserDialog1
@@ -163,13 +165,12 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.启动时自动检查更新ToolStripMenuItem,
             this.打开程序运行目录ToolStripMenuItem,
-            this.不格式化磁盘ToolStripMenuItem,
             this.手动执行命令ToolStripMenuItem,
             this.强制格式化ToolStripMenuItem,
             this.萝卜头IT论坛ToolStripMenuItem,
             this.错误提示测试ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(185, 158);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(185, 136);
             // 
             // 启动时自动检查更新ToolStripMenuItem
             // 
@@ -188,14 +189,6 @@
             this.打开程序运行目录ToolStripMenuItem.Text = "打开程序运行目录";
             this.打开程序运行目录ToolStripMenuItem.Click += new System.EventHandler(this.打开程序运行目录ToolStripMenuItem_Click);
             // 
-            // 不格式化磁盘ToolStripMenuItem
-            // 
-            this.不格式化磁盘ToolStripMenuItem.CheckOnClick = true;
-            this.不格式化磁盘ToolStripMenuItem.Name = "不格式化磁盘ToolStripMenuItem";
-            this.不格式化磁盘ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.不格式化磁盘ToolStripMenuItem.Text = "不格式化磁盘(慎用)";
-            this.不格式化磁盘ToolStripMenuItem.CheckedChanged += new System.EventHandler(this.不格式化磁盘ToolStripMenuItem_Click);
-            // 
             // 手动执行命令ToolStripMenuItem
             // 
             this.手动执行命令ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -208,6 +201,7 @@
             this.向V盘写入ToolStripMenuItem,
             this.卸载V盘ToolStripMenuItem,
             this.复制VHD启动文件ToolStripMenuItem,
+            this.toolStripMenuItemvhdx,
             this.复制win8vhdToolStripMenuItem,
             this.清理临时文件ToolStripMenuItem,
             this.bootsectToolStripMenuItem,
@@ -221,28 +215,28 @@
             // imagex解压写入ToolStripMenuItem
             // 
             this.imagex解压写入ToolStripMenuItem.Name = "imagex解压写入ToolStripMenuItem";
-            this.imagex解压写入ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.imagex解压写入ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.imagex解压写入ToolStripMenuItem.Text = "imagex解压写入";
             this.imagex解压写入ToolStripMenuItem.Click += new System.EventHandler(this.imagex解压写入ToolStripMenuItem_Click);
             // 
             // 写入引导文件ToolStripMenuItem
             // 
             this.写入引导文件ToolStripMenuItem.Name = "写入引导文件ToolStripMenuItem";
-            this.写入引导文件ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.写入引导文件ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.写入引导文件ToolStripMenuItem.Text = "Bcdboot(传统)";
             this.写入引导文件ToolStripMenuItem.Click += new System.EventHandler(this.写入引导文件ToolStripMenuItem_Click);
             // 
             // 设置活动分区ToolStripMenuItem
             // 
             this.设置活动分区ToolStripMenuItem.Name = "设置活动分区ToolStripMenuItem";
-            this.设置活动分区ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.设置活动分区ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.设置活动分区ToolStripMenuItem.Text = "设置活动分区";
             this.设置活动分区ToolStripMenuItem.Click += new System.EventHandler(this.设置活动分区ToolStripMenuItem_Click);
             // 
             // 写入磁盘引导ToolStripMenuItem
             // 
             this.写入磁盘引导ToolStripMenuItem.Name = "写入磁盘引导ToolStripMenuItem";
-            this.写入磁盘引导ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.写入磁盘引导ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.写入磁盘引导ToolStripMenuItem.Text = "写入磁盘引导";
             this.写入磁盘引导ToolStripMenuItem.Click += new System.EventHandler(this.写入磁盘引导ToolStripMenuItem_Click);
             // 
@@ -252,7 +246,7 @@
             this.bcdboot7601,
             this.bcdboot9200});
             this.bcdbootToolStripMenuItem.Name = "bcdbootToolStripMenuItem";
-            this.bcdbootToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.bcdbootToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.bcdbootToolStripMenuItem.Text = "Bcdboot版本选择";
             this.bcdbootToolStripMenuItem.Click += new System.EventHandler(this.bcdbootToolStripMenuItem_Click);
             // 
@@ -277,57 +271,63 @@
             // 创建VHDToolStripMenuItem
             // 
             this.创建VHDToolStripMenuItem.Name = "创建VHDToolStripMenuItem";
-            this.创建VHDToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.创建VHDToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.创建VHDToolStripMenuItem.Text = "创建VHD";
             this.创建VHDToolStripMenuItem.Click += new System.EventHandler(this.创建VHDToolStripMenuItem_Click);
             // 
             // 向V盘写入ToolStripMenuItem
             // 
             this.向V盘写入ToolStripMenuItem.Name = "向V盘写入ToolStripMenuItem";
-            this.向V盘写入ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.向V盘写入ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.向V盘写入ToolStripMenuItem.Text = "向V盘写入";
             this.向V盘写入ToolStripMenuItem.Click += new System.EventHandler(this.向V盘写入ToolStripMenuItem_Click);
             // 
             // 卸载V盘ToolStripMenuItem
             // 
             this.卸载V盘ToolStripMenuItem.Name = "卸载V盘ToolStripMenuItem";
-            this.卸载V盘ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.卸载V盘ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.卸载V盘ToolStripMenuItem.Text = "卸载V盘";
             this.卸载V盘ToolStripMenuItem.Click += new System.EventHandler(this.卸载V盘ToolStripMenuItem_Click);
             // 
             // 复制VHD启动文件ToolStripMenuItem
             // 
             this.复制VHD启动文件ToolStripMenuItem.Name = "复制VHD启动文件ToolStripMenuItem";
-            this.复制VHD启动文件ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.复制VHD启动文件ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.复制VHD启动文件ToolStripMenuItem.Text = "复制VHD启动文件";
-            this.复制VHD启动文件ToolStripMenuItem.Visible = false;
             this.复制VHD启动文件ToolStripMenuItem.Click += new System.EventHandler(this.复制VHD启动文件ToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItemvhdx
+            // 
+            this.toolStripMenuItemvhdx.Name = "toolStripMenuItemvhdx";
+            this.toolStripMenuItemvhdx.Size = new System.Drawing.Size(182, 22);
+            this.toolStripMenuItemvhdx.Text = "复制VHDX启动文件";
+            this.toolStripMenuItemvhdx.Click += new System.EventHandler(this.toolStripMenuItemvhdx_Click);
             // 
             // 复制win8vhdToolStripMenuItem
             // 
             this.复制win8vhdToolStripMenuItem.Name = "复制win8vhdToolStripMenuItem";
-            this.复制win8vhdToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.复制win8vhdToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.复制win8vhdToolStripMenuItem.Text = "复制win8vhd";
             this.复制win8vhdToolStripMenuItem.Click += new System.EventHandler(this.复制win8vhdToolStripMenuItem_Click);
             // 
             // 清理临时文件ToolStripMenuItem
             // 
             this.清理临时文件ToolStripMenuItem.Name = "清理临时文件ToolStripMenuItem";
-            this.清理临时文件ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.清理临时文件ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.清理临时文件ToolStripMenuItem.Text = "清理临时文件";
             this.清理临时文件ToolStripMenuItem.Click += new System.EventHandler(this.清理临时文件ToolStripMenuItem_Click);
             // 
             // bootsectToolStripMenuItem
             // 
             this.bootsectToolStripMenuItem.Name = "bootsectToolStripMenuItem";
-            this.bootsectToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.bootsectToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.bootsectToolStripMenuItem.Text = "bootsect";
             this.bootsectToolStripMenuItem.Click += new System.EventHandler(this.bootsectToolStripMenuItem_Click);
             // 
             // diskpart重新分区ToolStripMenuItem
             // 
             this.diskpart重新分区ToolStripMenuItem.Name = "diskpart重新分区ToolStripMenuItem";
-            this.diskpart重新分区ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.diskpart重新分区ToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.diskpart重新分区ToolStripMenuItem.Text = "Diskpart重新分区";
             this.diskpart重新分区ToolStripMenuItem.Visible = false;
             this.diskpart重新分区ToolStripMenuItem.Click += new System.EventHandler(this.diskpart重新分区ToolStripMenuItem_Click);
@@ -335,7 +335,7 @@
             // vHDUEFIBCDToolStripMenuItem
             // 
             this.vHDUEFIBCDToolStripMenuItem.Name = "vHDUEFIBCDToolStripMenuItem";
-            this.vHDUEFIBCDToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.vHDUEFIBCDToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.vHDUEFIBCDToolStripMenuItem.Text = "VHD-UEFI-BCD";
             this.vHDUEFIBCDToolStripMenuItem.Visible = false;
             this.vHDUEFIBCDToolStripMenuItem.Click += new System.EventHandler(this.vHDUEFIBCDToolStripMenuItem_Click);
@@ -343,7 +343,7 @@
             // wIN7USBBOOTToolStripMenuItem
             // 
             this.wIN7USBBOOTToolStripMenuItem.Name = "wIN7USBBOOTToolStripMenuItem";
-            this.wIN7USBBOOTToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.wIN7USBBOOTToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.wIN7USBBOOTToolStripMenuItem.Text = "WIN7-USB-BOOT";
             this.wIN7USBBOOTToolStripMenuItem.Click += new System.EventHandler(this.wIN7USBBOOTToolStripMenuItem_Click);
             // 
@@ -361,6 +361,13 @@
             this.萝卜头IT论坛ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.萝卜头IT论坛ToolStripMenuItem.Text = "萝卜头IT论坛";
             this.萝卜头IT论坛ToolStripMenuItem.Click += new System.EventHandler(this.萝卜头IT论坛ToolStripMenuItem_Click);
+            // 
+            // 错误提示测试ToolStripMenuItem
+            // 
+            this.错误提示测试ToolStripMenuItem.Name = "错误提示测试ToolStripMenuItem";
+            this.错误提示测试ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.错误提示测试ToolStripMenuItem.Text = "错误提示测试";
+            this.错误提示测试ToolStripMenuItem.Click += new System.EventHandler(this.错误提示测试ToolStripMenuItem_Click);
             // 
             // linkLabel1
             // 
@@ -381,9 +388,9 @@
             this.label3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label3.Location = new System.Drawing.Point(16, 36);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(257, 51);
+            this.label3.Size = new System.Drawing.Size(288, 51);
             this.label3.TabIndex = 29;
-            this.label3.Text = "“Windows To Go”，制作在U盘上\r\n运行的 Windows7/8，让你的Win7/8带着走！\r\n推荐使用Windows 8.1企业版！";
+            this.label3.Text = "“Windows To Go”，制作在U盘上\r\n运行的 Windows7/8/10，让你的Windows带着走！\r\n推荐使用Windows 8.1企业版！";
             // 
             // linkLabel2
             // 
@@ -468,7 +475,7 @@
             // checkBoxnotemp
             // 
             this.checkBoxnotemp.AutoSize = true;
-            this.checkBoxnotemp.Location = new System.Drawing.Point(6, 149);
+            this.checkBoxnotemp.Location = new System.Drawing.Point(6, 124);
             this.checkBoxnotemp.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxnotemp.Name = "checkBoxnotemp";
             this.checkBoxnotemp.Size = new System.Drawing.Size(89, 21);
@@ -481,7 +488,7 @@
             // checkBox_san_policy
             // 
             this.checkBox_san_policy.AutoSize = true;
-            this.checkBox_san_policy.Location = new System.Drawing.Point(6, 120);
+            this.checkBox_san_policy.Location = new System.Drawing.Point(6, 102);
             this.checkBox_san_policy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBox_san_policy.Name = "checkBox_san_policy";
             this.checkBox_san_policy.Size = new System.Drawing.Size(99, 21);
@@ -493,7 +500,7 @@
             // checkBoxuefi
             // 
             this.checkBoxuefi.AutoSize = true;
-            this.checkBoxuefi.Location = new System.Drawing.Point(103, 87);
+            this.checkBoxuefi.Location = new System.Drawing.Point(105, 80);
             this.checkBoxuefi.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxuefi.Name = "checkBoxuefi";
             this.checkBoxuefi.Size = new System.Drawing.Size(85, 21);
@@ -555,6 +562,8 @@
             // 
             // groupBoxadv
             // 
+            this.groupBoxadv.Controls.Add(this.checkBoxunformat);
+            this.groupBoxadv.Controls.Add(this.checkBoxcommon);
             this.groupBoxadv.Controls.Add(this.checkBoxwimboot);
             this.groupBoxadv.Controls.Add(this.checkBoxuefimbr);
             this.groupBoxadv.Controls.Add(this.linkLabel5);
@@ -571,16 +580,39 @@
             this.groupBoxadv.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBoxadv.Name = "groupBoxadv";
             this.groupBoxadv.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxadv.Size = new System.Drawing.Size(195, 184);
+            this.groupBoxadv.Size = new System.Drawing.Size(196, 184);
             this.groupBoxadv.TabIndex = 41;
             this.groupBoxadv.TabStop = false;
             this.groupBoxadv.Text = "高级选项";
+            // 
+            // checkBoxunformat
+            // 
+            this.checkBoxunformat.AutoSize = true;
+            this.checkBoxunformat.Location = new System.Drawing.Point(105, 146);
+            this.checkBoxunformat.Name = "checkBoxunformat";
+            this.checkBoxunformat.Size = new System.Drawing.Size(75, 21);
+            this.checkBoxunformat.TabIndex = 49;
+            this.checkBoxunformat.Text = "不格式化";
+            this.checkBoxunformat.UseVisualStyleBackColor = true;
+            this.checkBoxunformat.CheckedChanged += new System.EventHandler(this.checkBoxunformat_CheckedChanged);
+            // 
+            // checkBoxcommon
+            // 
+            this.checkBoxcommon.AutoSize = true;
+            this.checkBoxcommon.Checked = true;
+            this.checkBoxcommon.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxcommon.Location = new System.Drawing.Point(6, 146);
+            this.checkBoxcommon.Name = "checkBoxcommon";
+            this.checkBoxcommon.Size = new System.Drawing.Size(99, 21);
+            this.checkBoxcommon.TabIndex = 48;
+            this.checkBoxcommon.Text = "通用启动文件";
+            this.checkBoxcommon.UseVisualStyleBackColor = true;
             // 
             // checkBoxwimboot
             // 
             this.checkBoxwimboot.AutoSize = true;
             this.checkBoxwimboot.Enabled = false;
-            this.checkBoxwimboot.Location = new System.Drawing.Point(103, 148);
+            this.checkBoxwimboot.Location = new System.Drawing.Point(105, 124);
             this.checkBoxwimboot.Name = "checkBoxwimboot";
             this.checkBoxwimboot.Size = new System.Drawing.Size(90, 21);
             this.checkBoxwimboot.TabIndex = 46;
@@ -590,7 +622,7 @@
             // checkBoxuefimbr
             // 
             this.checkBoxuefimbr.AutoSize = true;
-            this.checkBoxuefimbr.Location = new System.Drawing.Point(103, 120);
+            this.checkBoxuefimbr.Location = new System.Drawing.Point(105, 102);
             this.checkBoxuefimbr.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxuefimbr.Name = "checkBoxuefimbr";
             this.checkBoxuefimbr.Size = new System.Drawing.Size(90, 21);
@@ -602,7 +634,7 @@
             // checkBoxdiswinre
             // 
             this.checkBoxdiswinre.AutoSize = true;
-            this.checkBoxdiswinre.Location = new System.Drawing.Point(6, 87);
+            this.checkBoxdiswinre.Location = new System.Drawing.Point(6, 80);
             this.checkBoxdiswinre.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxdiswinre.Name = "checkBoxdiswinre";
             this.checkBoxdiswinre.Size = new System.Drawing.Size(88, 21);
@@ -613,7 +645,7 @@
             // checkBoxframework
             // 
             this.checkBoxframework.AutoSize = true;
-            this.checkBoxframework.Location = new System.Drawing.Point(103, 58);
+            this.checkBoxframework.Location = new System.Drawing.Point(105, 58);
             this.checkBoxframework.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.checkBoxframework.Name = "checkBoxframework";
             this.checkBoxframework.Size = new System.Drawing.Size(75, 21);
@@ -812,19 +844,13 @@
             this.label5.Text = "WIN8以下系统\r\n部分功能不可用";
             this.label5.Visible = false;
             // 
-            // 错误提示测试ToolStripMenuItem
-            // 
-            this.错误提示测试ToolStripMenuItem.Name = "错误提示测试ToolStripMenuItem";
-            this.错误提示测试ToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.错误提示测试ToolStripMenuItem.Text = "错误提示测试";
-            this.错误提示测试ToolStripMenuItem.Click += new System.EventHandler(this.错误提示测试ToolStripMenuItem_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(607, 251);
             this.ContextMenuStrip = this.contextMenuStrip1;
+            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.button3);
@@ -839,7 +865,6 @@
             this.Controls.Add(this.radiovhd);
             this.Controls.Add(this.radiochuantong);
             this.Controls.Add(this.linkLabel2);
-            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.comboBox1);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -877,7 +902,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripMenuItem 打开程序运行目录ToolStripMenuItem;
         private System.Windows.Forms.LinkLabel linkLabel2;
-        private System.Windows.Forms.ToolStripMenuItem 不格式化磁盘ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 手动执行命令ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem imagex解压写入ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 写入引导文件ToolStripMenuItem;
@@ -939,6 +963,9 @@
         private System.Windows.Forms.CheckBox checkBoxuefimbr;
         private System.Windows.Forms.CheckBox checkBoxwimboot;
         private System.Windows.Forms.ToolStripMenuItem 错误提示测试ToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkBoxcommon;
+        private System.Windows.Forms.CheckBox checkBoxunformat;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemvhdx;
     }
 }
 

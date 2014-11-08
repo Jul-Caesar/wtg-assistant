@@ -31,11 +31,12 @@ namespace wintogo
         int wimpart;
         int force=0;
         int formwide=623;
-        bool isformat = true ;
+        //bool isformat = true ;
         bool usetemp = true;
         bool useiso = false;
+        bool allowesd=false;
         bool needcopy;
-        bool win7togo;
+        //bool win7togo;
         bool shouldcontinue = true;
         public delegate void AppendTextCallback(string text);
         writeprogress wp = new writeprogress();
@@ -45,7 +46,57 @@ namespace wintogo
         private Thread threadupdate;
         Thread threadreport;
         private Thread threadwrite;
-        
+        bool isesd = false;
+        int win7togo;
+        private void Fixletter(string targetletter, string currentos) 
+        {
+            byte[] registData;
+            RegistryKey hkml = Registry.LocalMachine ;
+            RegistryKey software = hkml.OpenSubKey("SYSTEM", false);
+            RegistryKey aimdir = software.OpenSubKey("MountedDevices", false);
+            registData = (byte[])aimdir.GetValue("\\DosDevices\\" + currentos);
+            if (registData != null) 
+            {
+                SyncCMD("reg.exe load HKU\\TEMP " + currentos + "\\Windows\\System32\\Config\\SYSTEM  > \"" + Application.StartupPath + "\\logs\\loadreg.log\"");
+                RegistryKey hklm = Registry.Users  ;
+                RegistryKey temp = hklm.OpenSubKey("TEMP", true);
+                try
+                {
+                    temp.DeleteSubKey("MountedDevices");
+                }
+                catch { }
+                RegistryKey wtgreg = temp.CreateSubKey("MountedDevices");
+                wtgreg.SetValue("\\DosDevices\\" + targetletter, registData, RegistryValueKind.Binary );
+                wtgreg.Close();
+                temp.Close();
+                    SyncCMD("reg.exe unload HKU\\TEMP > \"" + Application.StartupPath + "\\logs\\unloadreg.log\"");
+                
+               
+
+                //string code = ToHexString(registData);
+                ////for (int i = 0; i < registData.Length; i++) 
+                ////{
+                ////    code += ToHexString(registData);
+                ////}
+                //MessageBox.Show(code);
+                
+            }
+        }
+        public static string ToHexString(byte[] bytes) // 0xae00cf => "AE00CF "  
+        {
+            string hexString = string.Empty;
+            if (bytes != null)
+            {
+                StringBuilder strB = new StringBuilder();
+
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    strB.Append(bytes[i].ToString("X2"));
+                }
+                hexString = strB.ToString();
+            }
+            return hexString;
+        }  
 
         public Form1()
         {
@@ -158,7 +209,7 @@ namespace wintogo
         private void Checkfiles() 
         
         {
-            string[] sw_fl = new string[13]; ;//software filelist
+            string[] sw_fl = new string[12]; ;//software filelist
             sw_fl[0]="\\files\\unattend.xml";
             sw_fl[1] = "\\files\\san_policy.xml";
             sw_fl[2] = "\\files\\imagex.exe";
@@ -170,8 +221,8 @@ namespace wintogo
             sw_fl[8] = "\\files\\BOOTICE.EXE";
             sw_fl[9] = "\\files\\bcdboot.exe";
             sw_fl[10] = "\\files\\bcdboot7601.exe";
-            sw_fl[11] = "\\files\\osletter7.bat";
-            sw_fl[12] = "\\files\\usb.reg";
+            //sw_fl[11] = "\\files\\osletter7.bat";
+            sw_fl[11] = "\\files\\usb.reg";
 
 
 
@@ -231,7 +282,7 @@ namespace wintogo
             }
             catch (Exception ex) 
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show("NTFS文件流异常\n请放心，此错误不影响正常使用！\n"+ex.ToString(),"警告",MessageBoxButtons .OK ,MessageBoxIcon.Information );
             }
         }
         public string GetFileVersion(string path)
@@ -294,7 +345,12 @@ namespace wintogo
             {
                 radiovhd.Checked = true;
                 //WIN8.1 UPDATE1 WIMBOOT
-                if (GetFileVersion(System.Environment.GetEnvironmentVariable("windir") + "\\System32\\dism.exe").Substring(0, 14) == "6.3.9600.17031") { checkBoxwimboot.Enabled = true; }
+                string dismversion=GetFileVersion(System.Environment.GetEnvironmentVariable("windir") + "\\System32\\dism.exe");
+                if (dismversion.Substring(0, 14) == "6.3.9600.17031" || dismversion.Substring(0, 3) == "6.4") 
+                { 
+                    checkBoxwimboot.Enabled = true;
+                    allowesd = true;
+                }
             }
             timer1.Start();
             Set_Text = new set_Text(set_textboxText); //实例化
@@ -318,7 +374,8 @@ namespace wintogo
                 wp.ShowDialog();
                 ExecuteCMD("reg.exe", " unload HKLM\\sys");
                 wp.ShowDialog();
-                SyncCMD("\""+Application.StartupPath + "\\files\\osletter7.bat\" /targetletter:c /currentos:" + ud.Substring(0, 1) + " > \"" + Application.StartupPath + "\\logs\\osletter7.log\"");
+                Fixletter("C:", ud.Substring(0, 2));
+                //SyncCMD("\""+Application.StartupPath + "\\files\\osletter7.bat\" /targetletter:c /currentos:" + ud.Substring(0, 1) + " > \"" + Application.StartupPath + "\\logs\\osletter7.log\"");
             }
             catch(Exception err) 
             {
@@ -660,9 +717,19 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
             wimpart = choosepart.part;//读取选择分卷，默认选择第一分卷
 
             //各种提示
+            if (wimbox.Text.Substring(wimbox.Text.Length - 3, 3) != "wim" && wimbox.Text.Substring(wimbox.Text.Length - 3, 3) != "esd")//不是WIM文件
+            {
+                MessageBox.Show("镜像文件选择错误！请选择install.wim！"); return;
+            }
+            else
+            {
+                if (!System.IO.File.Exists(wimbox.Text)) { MessageBox.Show("请选择install.wim文件！", "错误！", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }//文件不存在.
+                win8iso = wimbox.Text;
+            }
+
 
             if (comboBox1.SelectedIndex == 0) { MessageBox.Show("请选择可移动设备！", "错误！", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }//是否选择优盘
-            if (!System.IO.File.Exists(wimbox.Text)) { MessageBox.Show("请选择win8镜像文件或install.wim文件！", "错误！", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            //if (!System.IO.File.Exists(wimbox.Text)) { MessageBox.Show("请选择win8镜像文件或install.wim文件！", "错误！", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
             if (GetHardDiskSpace(ud) <= 12582912) //优盘容量<12 GB提示
             {
                 if (DialogResult.No == MessageBox.Show("可移动磁盘容量不足16G，继续写入可能会导致程序出错！您确定要继续吗？", "警告！", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)) { return; }
@@ -688,21 +755,13 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
             }
             else//普通格式化提示
             {
-                if (DialogResult.No == MessageBox.Show(ud.Substring(0, 1) + "盘将会被格式化，此操作将不可恢复，您确定要继续吗？\n由于写入时间较长，请您耐心等待！\n写入过程中弹出写入可能无效属于正常现象，选是即可。", "警告！", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)) { return; }
-                //if (DialogResult.No == MessageBox.Show("如果您不清楚您在做什么，请立即停止操作！", "警告！", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)) { return; }
-
+                if (!checkBoxunformat.Checked)
+                {
+                    if (DialogResult.No == MessageBox.Show(ud.Substring(0, 1) + "盘将会被格式化，此操作将不可恢复，您确定要继续吗？\n由于写入时间较长，请您耐心等待！\n写入过程中弹出写入可能无效属于正常现象，选是即可。", "警告！", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)) { return; }
+                    //if (DialogResult.No == MessageBox.Show("如果您不清楚您在做什么，请立即停止操作！", "警告！", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)) { return; }
+                }
             }
           
-            if (wimbox.Text.Substring(wimbox.Text.Length - 3, 3) != "wim")//不是WIM文件
-            {
-                MessageBox.Show("镜像文件选择错误！请选择install.wim！"); return;
-            }
-            else
-            {
-                if (!System.IO.File.Exists(wimbox.Text)) { MessageBox.Show("请选择install.wim文件！", "错误！", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }//文件不存在.
-                win8iso = wimbox.Text;
-            }
-
 
 
 
@@ -710,6 +769,8 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
             SyncCMD ("cmd.exe /c del /f /s /q \""+Application .StartupPath +"\\logs\\*.*\"");
            //////////////将程序运行信息写入LOG
             Log.WriteLog("Environment.log", "App Version:" + Application.ProductVersion + "\r\nApp Path:" + Application.StartupPath + "\r\nOSVersion:" + System.Environment.OSVersion.ToString() + "\r\nDism Version:" + GetFileVersion(System.Environment.GetEnvironmentVariable("windir") + "\\System32\\dism.exe") + "\r\nWim file:" + wimbox.Text + "\r\nUsb Disk:" + comboBox1.SelectedItem.ToString() + "\r\nClassical:" + radiochuantong.Checked.ToString() + "\r\nVHD:" + radiovhd.Checked.ToString() + "\r\nVHDX:" + radiovhdx.Checked.ToString() + "\r\nRe-Partition:" + checkBoxdiskpart.Checked + "\r\nVHD Size Set:" + numericUpDown1.Value.ToString() + "\r\nFixed VHD:" + checkBoxfixed.Checked.ToString() + "\r\nDonet:" + checkBoxframework.Checked.ToString() + "\r\nDisable-WinRE:" + checkBoxdiswinre.Checked.ToString() + "\r\nBlock Local Disk:" + checkBox_san_policy.Checked.ToString() + "\r\nNoTemp:" + checkBoxnotemp.Checked.ToString() + "\r\nUEFI+GPT:" + checkBoxuefi.Checked.ToString() + "\r\nUEFI+MBR:" + checkBoxuefimbr.Checked.ToString() + "\r\nWIMBOOT:" + checkBoxwimboot.Checked.ToString());
+
+            File .Copy (Environment .GetEnvironmentVariable ("windir")+"\\Logs\\DISM\\dism.log",Application .StartupPath +"\\logs\\dism.log");
             ///////
             //uefi
             // 
@@ -763,7 +824,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                 if (radiochuantong.Checked)
                 {//UEFI+GPT 传统
                     //判断是否WIN7，自动选择安装分卷
-                    int win7togo = iswin7(win8iso);
+                    //int win7togo = iswin7(win8iso);
                     if (wimpart==0)
                     {//自动判断模式
 
@@ -790,8 +851,19 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     }
                     else
                     {
-                        ExecuteCMD(Application.StartupPath + "\\files\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + ud);
-                        wp.ShowDialog();
+                        //dism /apply-image /imagefile:9600.17050.winblue_refresh.140317-1640_x64fre_client_Professional_zh-cn-ir3_cpra_x64frer_zh-cn_esd.esd /index:4 /applydir:G:\
+
+                        if (isesd) 
+                        {
+                            ExecuteCMD("Dism.exe", " /Apply-Image /ImageFile:\"" + win8iso + "\" /ApplyDir:" + ud.Substring(0, 2) + " /Index:" + wimpart.ToString());
+                            wp.ShowDialog();
+
+                        }
+                        else
+                        {
+                            ExecuteCMD(Application.StartupPath + "\\files\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + ud);
+                            wp.ShowDialog();
+                        }
                     }
                     //安装EXTRA
                     if (checkBoxframework.Checked)
@@ -812,8 +884,49 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                         File.Copy(Application.StartupPath + "\\files\\unattend.xml", ud + "Windows\\System32\\sysprep\\unattend.xml");
                     }
                     //BCDBOOT WRITE BOOT FILE    
-                    ExecuteCMD(Application.StartupPath+"\\files\\" + bcdboot , ud + "windows  /s  x: /f ALL");
+                    ExecuteCMD(Application.StartupPath+"\\files\\" + bcdboot , ud + "windows  /s  x: /f UEFI");
                     wp.ShowDialog();
+
+                    ////UEFI卸载X盘
+                    //removeletterx();
+                    //FileStream fs1 = new FileStream(Application.StartupPath + "\\uefi.txt", FileMode.Create, FileAccess.Write);
+                    //fs1.SetLength(0);
+                    //StreamWriter sw1 = new StreamWriter(fs0, Encoding.Default);
+                    //string ws1 = "";
+                    //try
+                    //{
+                    //    ws0 = "select volume x";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "clean";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "convert gpt";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "create partition efi size 350";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "create partition primary";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "select partition 2";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "format fs=fat quick";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "assign letter=x";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "select partition 3";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "format fs=ntfs quick";
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "assign letter=" + ud.Substring(0, 1);
+                    //    sw0.WriteLine(ws0);
+                    //    ws0 = "exit";
+                    //    sw0.WriteLine(ws0);
+                    //}
+                    //catch { }
+                    //sw1.Close();
+                    //ExecuteCMD("diskpart.exe", " /s \"" + Application.StartupPath + "\\uefi.txt\"");
+                    //wp.ShowDialog();
+
+
+
 
                 }
                 else // UEFI+GPT VHD、VHDX模式
@@ -847,12 +960,13 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     }
                     else
                     {
-                        error er = new error("Win8 VHD文件不存在！");
+                        error er = new error("VHD文件创建出错！");
                         er.ShowDialog();
                         //MessageBox.Show("Win8 VHD文件不存在！，可到论坛发帖求助！\n建议将程序目录下logs文件夹打包上传，谢谢！","出错啦！",MessageBoxButtons .OK ,MessageBoxIcon.Error );
                         //System.Diagnostics.Process.Start("http://bbs.luobotou.org/forum-88-1.html");
                     }
                 }
+                removeletterx();
                 finish f = new finish();
                 f.ShowDialog();
 
@@ -906,7 +1020,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                 if (radiochuantong.Checked)
                 {
                     //判断是否WIN7，自动选择安装分卷
-                    int win7togo = iswin7(win8iso);
+                    //int win7togo = iswin7(win8iso);
                     if (wimpart == 0)
                     {//自动判断模式
 
@@ -933,8 +1047,16 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     }
                     else
                     {
-                        ExecuteCMD(Application.StartupPath + "\\files\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + ud);
-                        wp.ShowDialog();
+                        if (isesd)
+                        {
+                            ExecuteCMD("Dism.exe", " /Apply-Image /ImageFile:\"" + win8iso + "\" /ApplyDir:" + ud.Substring(0, 2) + " /Index:" + wimpart.ToString());
+                            wp.ShowDialog();
+                        }
+                        else
+                        {
+                            ExecuteCMD(Application.StartupPath + "\\files\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + ud);
+                            wp.ShowDialog();
+                        }
                     }
                     //安装EXTRA
                     if (checkBoxframework.Checked)
@@ -960,6 +1082,9 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     System.Diagnostics.Process p2 = System.Diagnostics.Process.Start(Application.StartupPath + "\\files" + "\\bootice.exe", " /DEVICE=x: /partitions /activate  /quiet");
                     p2.WaitForExit();
 
+                    //finish f = new finish();
+                    //f.ShowDialog();
+
                 }
                 else //uefi VHD、VHDX模式
                 {
@@ -984,6 +1109,13 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     {
                         vhd_dynamic_instructions();
                     }
+                    if (checkBoxuefimbr.Checked)
+                    {
+                        System.Diagnostics.Process pbr = System.Diagnostics.Process.Start(Application.StartupPath + "\\files" + "\\BOOTICE.exe", (" /DEVICE=X: /pbr /install /type=bootmgr /quiet"));//写入引导
+                        pbr.WaitForExit();
+                        System.Diagnostics.Process act = System.Diagnostics.Process.Start(Application.StartupPath + "\\files" + "\\bootice.exe", " /DEVICE=X: /partitions /activate /quiet");
+                        act.WaitForExit();
+                    }
 
                     if (System.IO.File.Exists(ud + win8vhdfile))
                     {
@@ -1006,7 +1138,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
             else //非UEFI模式
             {
                 //传统
-                if (!checkBoxdiskpart.Checked && isformat)//普通格式化
+                if (!checkBoxdiskpart.Checked && !checkBoxunformat .Checked)//普通格式化
                 {
                     ExecuteCMD("cmd.exe", "/c format " + ud.Substring(0, 2) + "/FS:ntfs /q /V: /Y");
                     wp.ShowDialog();
@@ -1021,7 +1153,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                 ///////////////////////////////////正式开始////////////////////////////////////////////////
                 if (radiochuantong.Checked)
                 {
-                    int win7togo = iswin7(win8iso);
+                    //int win7togo = iswin7(win8iso);
                     if (wimpart == 0)
                     {//自动判断模式
 
@@ -1047,8 +1179,16 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     }
                     else
                     {
-                        ExecuteCMD(Application.StartupPath + "\\files" + "\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + ud);
-                        wp.ShowDialog();
+                        if (isesd)
+                        {
+                            ExecuteCMD("Dism.exe", " /Apply-Image /ImageFile:\"" + win8iso + "\" /ApplyDir:" + ud.Substring(0, 2) + " /Index:" + wimpart.ToString());
+                            wp.ShowDialog();
+                        }
+                        else
+                        {
+                            ExecuteCMD(Application.StartupPath + "\\files" + "\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + ud);
+                            wp.ShowDialog();
+                        }
                     }
                     /////////////
                     if (win7togo != 0) { Win7REG(ud); }
@@ -1105,7 +1245,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     }
 
                 }
-                else // VHD VHDX
+                else //非UEFI VHD VHDX
                 {
                     if (!shouldcontinue) { return; }
                     cleantemp();
@@ -1120,7 +1260,10 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                      detachvhd();
                      if (!shouldcontinue) { return; }
 
-                     copyvhdbootfile();
+                     if (checkBoxcommon.Checked||usetemp)
+                     {
+                         copyvhdbootfile();
+                     }
                      if (!shouldcontinue) { return; }
 
                     if (!checkBoxfixed.Checked)
@@ -1162,6 +1305,15 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                 }
             }
         }
+        //private string GetRegistData(string name)
+        //{
+        //    string registData;
+        //    RegistryKey hkml = Registry.LocalMachine;
+        //    RegistryKey software = hkml.OpenSubKey("SOFTWARE", true);
+        //    RegistryKey aimdir = software.OpenSubKey("XXX", true);
+        //    registData = aimdir.GetValue(name).ToString();
+        //    return registData;
+        //} 
         private void createvhd() 
         {
             ////////////////vhd设定///////////////////////
@@ -1191,7 +1343,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
              needcopy = false;
             wimpart = choosepart.part;
             ////win7////
-            int win7togo = iswin7(win8iso);
+            //int win7togo = iswin7(win8iso);
             //if (win7togo != 0 && radiovhdx.Checked) { MessageBox.Show("WIN7 WTG系统不支持VHDX模式！"); return; }
             if (wimpart == 0)
             {//自动判断模式
@@ -1290,10 +1442,18 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
 
             }
             else 
-            { 
+            {
+                if (isesd)
+                {
+                    ExecuteCMD("Dism.exe", " /Apply-Image /ImageFile:\"" + win8iso + "\" /ApplyDir:v: /Index:"+wimpart.ToString());
+                    wp.ShowDialog();
 
-                ExecuteCMD(Application.StartupPath + "\\files" + "\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + "v:\\");
-                wp.ShowDialog();
+                }
+                else
+                {
+                    ExecuteCMD(Application.StartupPath + "\\files" + "\\imagex.exe", " /apply " + "\"" + win8iso + "\"" + " " + wimpart.ToString() + " " + "v:\\");
+                    wp.ShowDialog();
+                }
             }
 
             //////////////
@@ -1301,13 +1461,21 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
             //////////////
             if (checkBoxuefi.Checked) 
             {
-                SyncCMD("\""+Application.StartupPath + "\\files\\osletter7.bat\" /targetletter:c /currentos:v  > \"" + Application.StartupPath + "\\logs\\osletter7.log\"");
+                Fixletter("C:", "V:");
+
+                //SyncCMD("\""+Application.StartupPath + "\\files\\osletter7.bat\" /targetletter:c /currentos:v  > \"" + Application.StartupPath + "\\logs\\osletter7.log\"");
 
             }
 
             if (!usetemp)
             {
-                if (checkBoxuefi.Checked||checkBoxuefimbr .Checked )
+                if (checkBoxuefi.Checked )
+                {
+                    ExecuteCMD(Application.StartupPath + "\\files\\" + bcdboot, "  " + "V:\\" + "windows  /s  x: /f UEFI");
+                    wp.ShowDialog();
+
+                }
+                else if (checkBoxuefimbr.Checked) 
                 {
                     ExecuteCMD(Application.StartupPath + "\\files\\" + bcdboot, "  " + "V:\\" + "windows  /s  x: /f ALL");
                     wp.ShowDialog();
@@ -1315,10 +1483,38 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                 }
                 else
                 {
-                    ExecuteCMD(Application.StartupPath + "\\files\\" + bcdboot, "  " + "V:\\" + "windows  /s  " + ud.Substring(0, 2) + " /f BIOS");
-                    wp.ShowDialog();
+                    if (!checkBoxcommon.Checked)
+                    {
+                        ExecuteCMD(Application.StartupPath + "\\files\\" + bcdboot, "  " + "V:\\" + "windows  /s  " + ud.Substring(0, 2) + " /f BIOS");
+                        wp.ShowDialog();
+                    }
+                    else
+                    {
+                        //copyvhdbootfile();
+                    }
                 }
             }
+        }
+        private void removeletterx() 
+        {
+            FileStream fs0 = new FileStream(Application.StartupPath + "\\removex.txt", FileMode.Create, FileAccess.Write);
+            fs0.SetLength(0);
+            StreamWriter sw0 = new StreamWriter(fs0, Encoding.Default);
+            string ws0 = "";
+            try
+            {
+                ws0 = "select volume x";
+                sw0.WriteLine(ws0);
+                ws0 = "remove";
+                sw0.WriteLine(ws0);
+                ws0 = "exit";
+                sw0.WriteLine(ws0);
+            }
+            catch { }
+            sw0.Close();
+            ExecuteCMD("diskpart.exe", " /s \"" + Application.StartupPath + "\\removex.txt\"");
+            wp.ShowDialog();
+
         }
         private void copyvhd() 
         {
@@ -1660,6 +1856,12 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     //如果存在则删除
                     File.Delete(Application.StartupPath + "\\create.txt");
                 }
+                if (File.Exists(Application.StartupPath + "\\removex.txt"))
+                {
+                    //如果存在则删除
+                    File.Delete(Application.StartupPath + "\\removex.txt");
+                }
+
                 if (File.Exists(Application.StartupPath + "\\detach.txt"))
                 {
                     //如果存在则删除
@@ -1793,7 +1995,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
 
         private void 不格式化磁盘ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            isformat = !isformat ;
+            //isformat = !isformat ;
         }
 
         private void imagex解压写入ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1801,7 +2003,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
             wimpart = choosepart.part;
             if (wimpart == 0)
             {//自动判断模式
-                int win7togo = iswin7(win8iso);
+                win7togo = iswin7(win8iso);
 
                 if (win7togo == 1)
                 {//WIN7 32 bit
@@ -2026,7 +2228,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                 wimbox.Text = openFileDialog1.FileName;
                 if (openFileDialog1.FileName.Substring(openFileDialog1.FileName.Length - 3, 3) == "iso")
                 {
-                    
+
                     //ExecuteCMD(Application.StartupPath + "\\isocmd.exe  -i");
                     SyncCMD("\"" + Application.StartupPath + "\\files" + "\\isocmd.exe\" -i");
                     SyncCMD("\"" + Application.StartupPath + "\\files" + "\\isocmd.exe\" -s");
@@ -2034,11 +2236,11 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     SyncCMD("\"" + Application.StartupPath + "\\files" + "\\isocmd.exe\" -eject 0: ");
                     SyncCMD("\"" + Application.StartupPath + "\\files" + "\\isocmd.exe\" -MOUNT 0: \"" + openFileDialog1.FileName + "\"");
                     //mount.WaitForExit();
-                    for (int i = 68; i <= 90; i++) 
+                    for (int i = 68; i <= 90; i++)
                     {
                         string ascll_to_eng = Convert.ToChar(i).ToString();
-                        if (File.Exists(ascll_to_eng + ":\\sources\\install.wim")) 
-                        { 
+                        if (File.Exists(ascll_to_eng + ":\\sources\\install.wim"))
+                        {
                             wimbox.Text = ascll_to_eng + ":\\sources\\install.wim";
                             mount_successfully = true;
                             break;
@@ -2048,18 +2250,37 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
                     {
                         MessageBox.Show("虚拟光驱加载失败，请手动加载，之后选择install.wim");
                     }
-                    else 
+                    else
                     {
                         useiso = true;
                     }
                 }
-                int win7togo = iswin7(wimbox.Text);
-                if (win7togo != 0 ) //WIN7 cannot comptible with VHDX disk &wimboot
+                else if (openFileDialog1.FileName.Substring(openFileDialog1.FileName.Length - 3, 3) == "esd")
                 {
-                    if (radiovhdx.Checked) { radiovhd.Checked = true; }
-                    radiovhdx.Enabled  = false;
-                    checkBoxwimboot.Checked = false;
-                    checkBoxwimboot.Enabled = false;
+                    if (!allowesd)
+                    {
+                        MessageBox.Show("此系统不支持ESD文件处理！");
+
+                        return;
+                    }
+                    else
+                    {
+                        isesd = true;
+                        checkBoxwimboot.Checked = false;
+                        checkBoxwimboot.Enabled = false;
+                    }
+
+                }
+                else
+                {
+                    win7togo = iswin7(wimbox.Text);
+                    if (win7togo != 0) //WIN7 cannot comptible with VHDX disk &wimboot
+                    {
+                        if (radiovhdx.Checked) { radiovhd.Checked = true; }
+                        radiovhdx.Enabled = false;
+                        checkBoxwimboot.Checked = false;
+                        checkBoxwimboot.Enabled = false;
+                    }
                 }
 
             }
@@ -2093,7 +2314,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
 
             if (wimpart == 0)
             {//自动判断模式
-                int win7togo = iswin7(win8iso);
+                win7togo = iswin7(win8iso);
 
                 if (win7togo == 1)
                 {//WIN7 32 bit
@@ -2124,7 +2345,14 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
         {
             if (comboBox1.SelectedIndex == 0) { MessageBox.Show("请选择优盘！"); return; }
             ud = comboBox1.SelectedItem.ToString().Substring(0, 2) + "\\";//优盘
-            copyvhdbootfile();
+            ExecuteCMD("takeown.exe", " /f \""+ud+"\\boot\\"+"\" /r /d y && icacls \""+ud+"\\boot\\"+"\" /grant administrators:F /t");
+            wp.ShowDialog();
+
+            
+            ExecuteCMD("xcopy.exe", "\"" + Application.StartupPath + "\\files" + "\\" + "vhd" + "\\" + "*.*" + "\"" + " " + ud + " /e /h /y");
+            wp.ShowDialog();
+
+            //copyvhdbootfile();
            
         }
 
@@ -2379,7 +2607,16 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
 
         private void checkBoxdiskpart_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBoxdiskpart.Checked) { MessageBox.Show("请注意勾选此选项将会清空移动磁盘所有数据！","警告！",MessageBoxButtons .OK ,MessageBoxIcon.Warning ); }
+            if (checkBoxdiskpart.Checked)
+            {
+                MessageBox.Show("请注意勾选此选项将会清空移动磁盘所有数据！", "警告！", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                checkBoxunformat.Checked = false;
+                checkBoxunformat.Enabled = false;
+            }
+            else
+            {
+                checkBoxunformat.Enabled = true;
+            }
         }
 
         private void 选择安装分卷ToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -2401,7 +2638,7 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
 
         private void wIN7TOGOToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            win7togo = wIN7TOGOToolStripMenuItem.Checked;
+            //win7togo = wIN7TOGOToolStripMenuItem.Checked;
         }
 
         private void wIN7USBBOOTToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2423,7 +2660,8 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
 
         private void checkBoxuefimbr_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBoxuefi.Checked && checkBoxuefimbr.Checked) { checkBoxuefi.Checked = false; checkBoxuefimbr.Checked = true; }
+            if (checkBoxuefi.Checked && checkBoxuefimbr.Checked) { checkBoxuefi.Checked = false; checkBoxuefimbr.Checked = true;  }
+            if (checkBoxuefimbr.Checked) { checkBoxdiswinre.Checked = true; }
             checkBoxdiskpart.Enabled = !checkBoxuefimbr.Checked;
             checkBoxdiskpart.Checked = checkBoxuefimbr.Checked;
         }
@@ -2455,8 +2693,32 @@ foreach(ManagementObject drive in new ManagementObjectSearcher(
 
         private void 错误提示测试ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            error ex = new error("测试错误信息！TEST!");
-            ex.Show();
+            //System.Diagnostics.Process.Start("c:\\windows\\system32\\bcdboot.exe");
+            //MessageBox.Show(Environment.GetEnvironmentVariable("windir") + "\\system32\\bcdboot.exe");
+            //ExecuteCMD(Environment.GetEnvironmentVariable("windir") + "\\system32\\bcdboot.exe", "  " + "V:\\" + "windows  /s  x: /f UEFI");
+            //wp.ShowDialog();
+            MessageBox.Show(Application.ProductName);
+            //Fixletter("C:","J:");
+            //error ex = new error("测试错误信息！TEST!");
+            //ex.Show();
+        }
+
+        private void checkBoxunformat_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxunformat.Checked) { MessageBox.Show("此选项仅在非UEFI模式下有效！"); }
+        }
+
+        private void toolStripMenuItemvhdx_Click(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex == 0) { MessageBox.Show("请选择优盘！"); return; }
+            ud = comboBox1.SelectedItem.ToString().Substring(0, 2) + "\\";//优盘
+
+            ExecuteCMD("xcopy.exe", "\"" + Application.StartupPath + "\\files" + "\\" + "vhd" + "\\" + "*.*" + "\"" + " " + ud + " /e /h /y");
+            wp.ShowDialog();
+            ExecuteCMD("xcopy.exe", "\"" + Application.StartupPath + "\\files" + "\\" + "vhdx" + "\\" + "*.*" + "\"" + " " + ud + "\\boot\\ /e /h /y");
+                wp.ShowDialog();
+            
+
         }
     }
 }
